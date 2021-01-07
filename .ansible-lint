@@ -1,0 +1,3 @@
+verbosity: 1
+warn_list:
+  - '403'

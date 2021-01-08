@@ -1,0 +1,46 @@
+---
+- name: Install system wide dependencies
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install EPEL repo
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Import Remi GPG Key
+      rpm_key:
+        key: "https://rpms.remirepo.net/RPM-GPG-KEY-remi"
+        state: present
+
+    - name: Install Remi repo
+      yum:
+        name: "https://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+        state: present
+
+    - name: Install system wide dependencies
+      yum:
+        name:
+          - device-mapper-persistent-data
+          - git
+          - lvm2
+          - yum-utils
+        state: present
+        enablerepo: epel
+
+    # - name: Add Docker repo
+    #   get_url:
+    #     url: https://download.docker.com/linux/centos/docker-ce.repo
+    #     dest: /etc/yum.repos.d/docer-ce.repo
+
+    # - name: Install Docker
+    #   package:
+    #     name: docker-ce
+    #     state: latest
+
+    # - name: Start Docker service
+    #   service:
+    #     name: docker
+    #     state: started
+    #     enabled: yes

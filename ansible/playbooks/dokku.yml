@@ -20,3 +20,9 @@
           - herokuish
           - dokku
         state: latest
+
+    - name: Add user admin to dokku group
+      user:
+        name: admin
+        groups: dokku
+        append: yes

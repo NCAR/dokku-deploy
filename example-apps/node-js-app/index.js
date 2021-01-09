@@ -1,5 +1,6 @@
 const http = require("http")
-const port = 9999
+const port = process.env.PORT || 9999
+const address = "0.0.0.0"
 
 http
   .createServer(function (request, response) {
@@ -10,6 +11,6 @@ http
     // Send the response
     response.end("Hello World from Nodejs Sample App\n")
   })
-  .listen(port)
+  .listen(port, address)
 
-console.log(`Server running at http://localhost:${port}`)
+console.log(`Server running at http://${address}:${port}`)

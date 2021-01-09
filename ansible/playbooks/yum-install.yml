@@ -48,20 +48,13 @@
         state: latest
 
     - name: Start Docker service
+      with_items:
+        - docker
+        - nginx
+        - ddclient
+        - dnsmasq
       service:
-        name: docker
-        state: started
-        enabled: yes
-
-    - name: Start nginx service
-      service:
-        name: nginx
-        state: started
-        enabled: yes
-
-    - name: Start ddclient service
-      service:
-        name: ddclient
+        name: "{{ item }}"
         state: started
         enabled: yes
 

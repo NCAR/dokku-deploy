@@ -75,14 +75,7 @@
       community.general.ufw:
         state: enabled
 
-    - name: Allow all access to tcp port 443
+    - name: Allow full Web Server (HTTP,HTTPS) access
       community.general.ufw:
         rule: allow
-        port: "443"
-        proto: tcp
-
-    - name: Allow all access to tcp port 80
-      community.general.ufw:
-        rule: allow
-        port: "80"
-        proto: tcp
+        name: "WWW Full"

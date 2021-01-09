@@ -3,6 +3,7 @@ const port = 9999
 
 http
   .createServer(function (request, response) {
+    console.log(request.socket.remoteAddress, request.headers.origin)
     // Send the HTTP header
     response.writeHead(200, { "Content-Type": "text/plain" })
 

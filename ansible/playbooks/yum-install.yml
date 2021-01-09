@@ -49,6 +49,12 @@
         state: started
         enabled: yes
 
+    - name: Start nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
     - name: Add user admin to docker group
       user:
         name: admin

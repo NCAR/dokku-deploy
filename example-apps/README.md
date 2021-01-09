@@ -3,17 +3,13 @@
 ## Nodejs App
 
 ```bash
-dokku apps:create node-js-app
-dokku git:initialize node-js-app
+dokku apps:create ode-js-getting-sarted
 ```
 
 ```bash
-cd node-js-app
+cd ode-js-getting-sarted
 git init
-git remote add dokku dokku@dokku.cloud.ucar.edu:node-js-app
-git push dokku master
-```
-
-```bash
-dokku proxy:ports-set node-js-app http:80:9999
+git branch -m main
+git remote add dokku dokku@dokku.cloud.ucar.edu:node-js-getting-sarted
+git push dokku main
 ```

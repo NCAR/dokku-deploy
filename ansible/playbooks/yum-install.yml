@@ -52,11 +52,18 @@
         - docker
         - nginx
         - ddclient
-        - dnsmasq
       service:
         name: "{{ item }}"
         state: started
         enabled: yes
+
+    - name: Create cron job for updating Dynamic DNS entry with ddclient
+      cron:
+        name: Dynamic DNS update
+        state: present
+        job: "/usr/sbin/ddclient --force"
+        minute: "0"
+        hour: "12"
 
     - name: Add user admin to docker group
       user:

@@ -1,3 +1,5 @@
+exclude_paths:
+  - .github/
 verbosity: 1
 skip_list:
   - '403'

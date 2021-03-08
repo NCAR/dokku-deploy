@@ -27,16 +27,10 @@ ansible-galaxy collection install community.general
   ansible-playbook ansible/playbooks/yum-update-reboot.yml
   ```
 
-- System wide dependencies
+- System wide dependencies, Dokku and its dependencies
 
   ```bash
   ansible-playbook ansible/playbooks/yum-install.yml
-  ```
-
-- Dokku and its dependencies
-
-  ```bash
-  ansible-playbook ansible/playbooks/dokku.yml
   ```
 
 ## Finalize Dokku Setup

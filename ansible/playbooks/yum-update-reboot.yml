@@ -2,10 +2,11 @@
 # performs yum update and reboots server
 - name: perform yum update / reboot server
   hosts: all
-  become: yes
+  become: true
 
   tasks:
-    - debug:
+    - name: yum update
+      debug:
         msg: "Performing Yum update of server {{ ansible_hostname }} "
     - name: Perform yum update of all packages
       yum:

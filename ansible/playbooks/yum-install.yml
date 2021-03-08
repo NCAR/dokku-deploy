@@ -1,81 +1,113 @@
 ---
 - name: Install system wide dependencies
   hosts: all
-  become: yes
+  become: true
+  vars:
+    GIT_MIN_VERSION: 2
+    DOCKER_COMPOSE_VERSION: 1.28.5
+    DOCKER_COMPOSE_BASEURL: https://github.com/docker/compose/releases/download/
 
   tasks:
     - name: Install EPEL repo
       yum:
         name: epel-release
         state: present
-
     - name: Import Remi GPG Key
       rpm_key:
         key: "https://rpms.remirepo.net/RPM-GPG-KEY-remi"
         state: present
-
     - name: Install Remi repo
       yum:
         name: "https://rpms.remirepo.net/enterprise/remi-release-7.rpm"
         state: present
-
-    - name: Install system wide dependencies
+    - name: Install IUS repo
       yum:
-        name:
-          - ddclient
-          - device-mapper-persistent-data
-          - firewalld
-          - git
-          - lvm2
-          - nano
-          - nginx
-          - ufw
-          - yum-utils
+        name: https://repo.ius.io/ius-release-el7.rpm
         state: present
-        enablerepo: epel
-
+    - name: Import dokku repo Key
+      rpm_key:
+        key: https://packagecloud.io/dokku/dokku/gpgkey
+        state: present
+    - name: Add dokku repo
+      get_url:
+        url: https://packagecloud.io/install/repositories/dokku/dokku/config_file.repo?os=centos&dist=7&source=script
+        dest: /etc/yum.repos.d/dokku_dokku.repo
     - name: Add Docker repo
       get_url:
         url: https://download.docker.com/linux/centos/docker-ce.repo
         dest: /etc/yum.repos.d/docer-ce.repo
 
-    - name: Install Docker
-      package:
+    - name: Check git version
+      shell: |
+        set -o pipefail
+        git --version | sed -ne 's/[^0-9]*\(\([0-9]\.\)\{0,4\}[0-9][^.]\).*/\1/p'
+      register: CURRENT_GIT_INSTALLED_VERSION
+      changed_when: false
+
+    - name: Get git version
+      debug:
+        msg: "current Git version: {{ CURRENT_GIT_INSTALLED_VERSION.stdout }}"
+
+    - name: Remove old git version
+      yum:
+        name: git*
+        state: absent
+      when: CURRENT_GIT_INSTALLED_VERSION.stdout is version(GIT_MIN_VERSION,'<')
+
+    - name: Install system wide dependencies
+      yum:
         name:
+          - certbot
+          - device-mapper-persistent-data
+          - firewalld
+          - git224
+          - lvm2
+          - nano
+          - nginx
+          - ufw
+          - yum-utils
           - docker-ce
           - docker-ce-cli
           - containerd.io
-        state: latest
+        state: present
+        enablerepo: ius
 
     - name: Start Docker service
       with_items:
         - docker
         - nginx
-        - ddclient
       service:
         name: "{{ item }}"
         state: started
-        enabled: yes
+        enabled: true
 
-    - name: Create cron job for updating Dynamic DNS entry with ddclient
-      cron:
-        name: Dynamic DNS update
-        state: present
-        job: "/usr/sbin/ddclient --force"
-        minute: "0"
-        hour: "12"
+    - name: Install dokku
+      package:
+        name:
+          - herokuish
+          - dokku
+        state: latest
+
+    - name: Add user admin to dokku group
+      user:
+        name: admin
+        groups: dokku
+        append: true
 
     - name: Add user admin to docker group
       user:
         name: admin
         groups: docker
-        append: yes
+        append: true
 
-    - name: Enable UFW
-      community.general.ufw:
-        state: enabled
+    - name: Download docker-compose
+      get_url:
+        url: "{{ DOCKER_COMPOSE_BASEURL }}/{{ DOCKER_COMPOSE_VERSION }}/docker-compose-{{ ansible_system }}-{{ ansible_userspace_architecture }}"
+        dest: ~/docker-compose
 
-    - name: Allow full Web Server (HTTP,HTTPS) access
-      community.general.ufw:
-        rule: allow
-        name: "WWW Full"
+    - name: Copy docker-compose to /usr/local/bin
+      copy:
+        remote_src: true
+        src: ~/docker-compose
+        dest: /usr/local/bin/docker-compose
+        mode: "u+x,g+x"

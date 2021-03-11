@@ -1,0 +1,25 @@
+---
+create_user: admin
+copy_local_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+sys_packages:
+  - curl
+  - vim
+  - certbot
+  - device-mapper-persistent-data
+  - firewalld
+  - git224
+  - lvm2
+  - nano
+  - nginx
+  - ufw
+  - traceroute
+  - yum-utils
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - herokuish
+  - dokku
+
+GIT_MIN_VERSION: 2
+DOCKER_COMPOSE_VERSION: 1.28.5
+DOCKER_COMPOSE_BASEURL: https://github.com/docker/compose/releases/download/

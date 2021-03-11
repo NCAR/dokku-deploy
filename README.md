@@ -10,28 +10,11 @@
 ```bash
 ansible-galaxy collection install community.general
 ansible-galaxy collection install ansible.posix
-ansible-galaxy collection install community.general
 ```
 
 ## Ansible Playbooks Installation
 
-- Set passwordless sudo for `admin` group
-
-  ```bash
-  ansible-playbook ansible/playbooks/set-sudoer.yml -b -K
-  ```
-
-- Yum update and Reboot
-
-  ```bash
-  ansible-playbook ansible/playbooks/yum-update-reboot.yml
-  ```
-
-- System wide dependencies, Dokku and its dependencies
-
-  ```bash
-  ansible-playbook ansible/playbooks/yum-install.yml
-  ```
+See [Initial Server Setup](./ansible/setup/README.md)
 
 ## Finalize Dokku Setup
 

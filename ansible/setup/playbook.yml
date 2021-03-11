@@ -2,16 +2,51 @@
 - name: Install system wide dependencies
   hosts: all
   become: true
-  vars:
-    GIT_MIN_VERSION: 2
-    DOCKER_COMPOSE_VERSION: 1.28.5
-    DOCKER_COMPOSE_BASEURL: https://github.com/docker/compose/releases/download/
-
+  vars_files:
+    - vars/default.yml
   tasks:
     - name: Install EPEL repo
       yum:
         name: epel-release
         state: present
+
+    - name: Make sure we have 'wheel, admin' groups
+      with_items:
+        - wheel
+        - admin
+      group:
+        name: "{{ item }}"
+        state: present
+
+    - name: Allow 'wheel, admin' groups to have passwordless sudo
+      with_items:
+        - wheel
+        - admin
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: "^%{{ item }}"
+        line: "%{{ item }} ALL=(ALL) NOPASSWD: ALL"
+        validate: "/usr/sbin/visudo -cf %s"
+
+    # User + Key Setup
+    - name: Create a new regular user with sudo privileges
+      user:
+        name: "{{ create_user }}"
+        state: present
+        groups:
+          - wheel
+          - admin
+        append: true
+        create_home: true
+        shell: /bin/bash
+
+    - name: Set authorized key for remote user
+      authorized_key:
+        user: "{{ create_user }}"
+        state: present
+        key: "{{ copy_local_key }}"
+
     - name: Import Remi GPG Key
       rpm_key:
         key: "https://rpms.remirepo.net/RPM-GPG-KEY-remi"
@@ -56,19 +91,7 @@
 
     - name: Install system wide dependencies
       yum:
-        name:
-          - certbot
-          - device-mapper-persistent-data
-          - firewalld
-          - git224
-          - lvm2
-          - nano
-          - nginx
-          - ufw
-          - yum-utils
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
+        name: "{{ sys_packages }}"
         state: present
         enablerepo: ius
 
@@ -81,23 +104,18 @@
         state: started
         enabled: true
 
-    - name: Install dokku
-      package:
-        name:
-          - herokuish
-          - dokku
-        state: latest
-
     - name: Add user admin to dokku group
       user:
         name: admin
-        groups: dokku
+        groups:
+          - dokku
         append: true
 
     - name: Add user admin to docker group
       user:
         name: admin
-        groups: docker
+        groups:
+          - docker
         append: true
 
     - name: Download docker-compose
@@ -111,3 +129,15 @@
         src: ~/docker-compose
         dest: /usr/local/bin/docker-compose
         mode: "u+x,g+x"
+
+    # UFW Setup
+    - name: UFW - Allow SSH connections
+      ufw:
+        rule: allow
+        name: ssh
+
+    - name: UFW - Deny all other incoming traffic by default
+      ufw:
+        state: enabled
+        policy: deny
+        direction: incoming

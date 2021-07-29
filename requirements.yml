@@ -1,0 +1,12 @@
+---
+roles:
+  - name: gantsign.oh-my-zsh
+  - name: geerlingguy.docker
+  - name: geerlingguy.firewall
+  - name: geerlingguy.git
+  - name: geerlingguy.pip
+  - name: geerlingguy.swap
+
+collections:
+  - name: community.general
+  - name: ansible.posix

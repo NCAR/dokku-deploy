@@ -1,0 +1,23 @@
+- hosts: all
+  roles:
+    - role: gantsign.oh-my-zsh
+      users:
+        - username: admin
+          oh_my_zsh:
+            plugins:
+              - git
+              - docker
+              - zsh-syntax-highlighting
+              - zsh-autosuggestions
+              - zsh-completions
+              - zsh-history-substring-search
+  tasks:
+    - name: Install oh-my-zsh plugins
+      with_items:
+        - https://github.com/zsh-users/zsh-autosuggestions
+        - https://github.com/zsh-users/zsh-syntax-highlighting
+        - https://github.com/zsh-users/zsh-completions
+        - https://github.com/zsh-users/zsh-history-substring-search
+      git:
+        repo: "{{ item }}"
+        dest: "~/.oh-my-zsh/custom/plugins/{{ item.split('/')[-1] }}"

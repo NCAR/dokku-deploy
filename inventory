@@ -1,0 +1,12 @@
+[all]
+hoku-01.cloud.ucar.edu
+hoku-02.cloud.ucar.edu
+
+[all:vars]
+ansible_user=admin
+
+[dokku]
+hoku-01.cloud.ucar.edu
+
+[dokku:vars]
+ansible_user=admin

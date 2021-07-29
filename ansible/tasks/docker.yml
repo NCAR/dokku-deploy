@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: true
+  vars:
+    pip_install_packages:
+      - name: pip
+        state: latest
+      - name: docker
+    pip_package: python3-pip
+    pip_executable: pip3
+    docker_users:
+      - admin
+
+  roles:
+    - role: geerlingguy.docker
+    - role: geerlingguy.pip

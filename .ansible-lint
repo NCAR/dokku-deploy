@@ -3,3 +3,8 @@ exclude_paths:
 verbosity: 1
 skip_list:
   - '403'
+  - experimental
+  - parser-error
+  - yaml
+  - risky-shell-pipe
+  - role-name

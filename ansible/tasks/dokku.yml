@@ -1,0 +1,37 @@
+---
+- name: Install system wide dependencies
+  hosts: dokku
+  become: true
+  vars:
+    sys_packages:
+      - herokuish
+      - dokku
+  roles:
+    - geerlingguy.repo-epel
+  tasks:
+    - name: Import Remi GPG Key
+      rpm_key:
+        key: "https://rpms.remirepo.net/RPM-GPG-KEY-remi"
+        state: present
+    - name: Install Remi repo
+      yum:
+        name: "https://rpms.remirepo.net/enterprise/remi-release-7.rpm"
+        state: present
+    - name: Install IUS repo
+      yum:
+        name: https://repo.ius.io/ius-release-el7.rpm
+        state: present
+    - name: Import dokku repo Key
+      rpm_key:
+        key: https://packagecloud.io/dokku/dokku/gpgkey
+        state: present
+    - name: Add dokku repo
+      get_url:
+        url: https://packagecloud.io/install/repositories/dokku/dokku/config_file.repo?os=centos&dist=7&source=script
+        dest: /etc/yum.repos.d/dokku_dokku.repo
+
+    - name: Install system wide dependencies
+      yum:
+        name: "{{ sys_packages }}"
+        state: present
+        enablerepo: ius

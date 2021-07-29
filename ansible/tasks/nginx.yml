@@ -1,0 +1,5 @@
+- hosts: dokku
+  become: true
+  roles:
+    - geerlingguy.certbot
+    - geerlingguy.nginx

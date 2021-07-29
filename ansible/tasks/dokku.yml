@@ -4,6 +4,7 @@
   become: true
   vars:
     sys_packages:
+      - nginx
       - herokuish
       - dokku
   roles:
@@ -30,7 +31,7 @@
         url: https://packagecloud.io/install/repositories/dokku/dokku/config_file.repo?os=centos&dist=7&source=script
         dest: /etc/yum.repos.d/dokku_dokku.repo
 
-    - name: Install system wide dependencies
+    - name: Install dokku and its dependencies
       yum:
         name: "{{ sys_packages }}"
         state: present
